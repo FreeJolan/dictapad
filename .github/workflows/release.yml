@@ -92,11 +92,11 @@ jobs:
           fi
           echo "Bundle: $BUNDLE"
 
-          # Sign — write the key to a temp file because the CLI takes a path.
-          KEY_FILE=$(mktemp)
-          trap 'rm -f "$KEY_FILE"' EXIT
-          printf '%s' "$TAURI_SIGNING_PRIVATE_KEY" > "$KEY_FILE"
-          pnpm tauri signer sign -f "$KEY_FILE" --password= "$BUNDLE"
+          # The signer picks up the key from $TAURI_SIGNING_PRIVATE_KEY
+          # automatically; passing `-f path` on top of that conflicts
+          # ("--private-key-path cannot be used with --private-key").
+          # Just rely on the env var.
+          pnpm tauri signer sign --password= "$BUNDLE"
 
           SIG_FILE="${BUNDLE}.sig"
           if [ ! -f "$SIG_FILE" ]; then
