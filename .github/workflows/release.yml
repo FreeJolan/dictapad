@@ -69,25 +69,38 @@ jobs:
           prerelease: false
           args: --target universal-apple-darwin
 
-      # tauri-action does not produce `latest.json` (the updater manifest)
-      # when the target is `universal-apple-darwin` — it generates the
-      # `.app.tar.gz.sig` next to the bundle but its internal path-matching
-      # skips the upload ("Signature not found for the updater JSON.
-      # Skipping upload..."). This step closes the gap by re-using the
-      # signature file tauri-action already wrote and uploading both the
-      # `.sig` and a hand-built `latest.json` to the draft release.
-      - name: Generate updater manifest and upload signature
+      # tauri-action's own latest.json upload silently no-ops for the
+      # universal-apple-darwin target ("Signature not found for the
+      # updater JSON. Skipping upload..."). We self-sign the bundle and
+      # publish the manifest ourselves so the updater flow is robust to
+      # whatever tauri-action does or doesn't do.
+      - name: Sign bundle and publish updater manifest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAG: ${{ github.ref_name }}
           REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
           VERSION="${TAG#v}"
-          SIG_FILE="src-tauri/target/universal-apple-darwin/release/bundle/macos/Dictapad.app.tar.gz.sig"
 
+          BUNDLE=$(find src-tauri/target -name "Dictapad.app.tar.gz" -type f | head -1)
+          if [ -z "$BUNDLE" ]; then
+            echo "::error::Bundle Dictapad.app.tar.gz not found under src-tauri/target/"
+            find src-tauri/target -maxdepth 6 \( -name "*.tar.gz" -o -name "*.dmg" \) 2>/dev/null | head -20 || true
+            exit 1
+          fi
+          echo "Bundle: $BUNDLE"
+
+          # Sign — write the key to a temp file because the CLI takes a path.
+          KEY_FILE=$(mktemp)
+          trap 'rm -f "$KEY_FILE"' EXIT
+          printf '%s' "$TAURI_SIGNING_PRIVATE_KEY" > "$KEY_FILE"
+          pnpm tauri signer sign -f "$KEY_FILE" --password= "$BUNDLE"
+
+          SIG_FILE="${BUNDLE}.sig"
           if [ ! -f "$SIG_FILE" ]; then
-            echo "::error::Signature file not found at $SIG_FILE — tauri-action behavior may have changed"
+            echo "::error::Signing did not produce $SIG_FILE"
             exit 1
           fi
 

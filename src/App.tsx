@@ -14,6 +14,7 @@ import { Toast } from "./components/Toast";
 import { UpdateBanner } from "./components/UpdateBanner";
 import {
   clearContent,
+  flushPendingContent,
   loadContent,
   loadIgnoredVersion,
   loadPinned,
@@ -112,6 +113,17 @@ export default function App() {
     if (!pendingUpdate) return;
     setInstalling(true);
     try {
+      // Synchronously flush any pending edits before the relaunch. The
+      // normal save path is debounced 500ms + LazyStore autoSave 500ms,
+      // which leaves up to a 1s race window where the very latest
+      // keystrokes haven't hit disk yet. Force a write here.
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+        saveTimerRef.current = null;
+      }
+      const md = editorRef.current?.getMarkdown() ?? "";
+      await flushPendingContent(md);
+
       await downloadAndInstall(pendingUpdate);
     } catch (err) {
       console.error("update install failed:", err);

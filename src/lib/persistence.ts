@@ -24,6 +24,17 @@ export async function saveContent(content: string): Promise<void> {
   await store.set(KEY_CONTENT, content);
 }
 
+/**
+ * Synchronously write content to disk and wait for the flush to complete.
+ * Use this on the path to a risky operation (install update, relaunch)
+ * where the 500ms autoSave window might lose the user's most recent
+ * edits.
+ */
+export async function flushPendingContent(content: string): Promise<void> {
+  await store.set(KEY_CONTENT, content);
+  await store.save();
+}
+
 export async function clearContent(): Promise<void> {
   await store.set(KEY_CONTENT, "");
   await store.save();
