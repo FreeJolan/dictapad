@@ -4,6 +4,16 @@ All notable changes to Dictapad. The format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+## [0.1.2] — 2026-05-11
+
+### Changed
+
+- Release pipeline now auto-generates `latest.json` and uploads the bundle signature in the same workflow run. The manual fix-up that v0.1.1 needed is gone.
+
+### Verification
+
+- This release exists primarily to confirm the in-app updater flow end-to-end: v0.1.1 clients should see the banner on launch and complete the upgrade silently.
+
 ## [0.1.1] — 2026-05-11
 
 ### Added
@@ -39,6 +49,7 @@ Initial release.
   - Undo restores prior state.
   - Output never contains `<br />` for typical content.
 
-[Unreleased]: https://github.com/FreeJolan/dictapad/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/FreeJolan/dictapad/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/FreeJolan/dictapad/releases/tag/v0.1.2
 [0.1.1]: https://github.com/FreeJolan/dictapad/releases/tag/v0.1.1
 [0.1.0]: https://github.com/FreeJolan/dictapad/releases/tag/v0.1.0

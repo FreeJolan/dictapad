@@ -1,6 +1,6 @@
 [package]
 name = "dictapad"
-version = "0.1.1"
+version = "0.1.2"
 description = "Floating Markdown scratchpad for voice dictation"
 authors = ["guojunnan"]
 edition = "2021"
