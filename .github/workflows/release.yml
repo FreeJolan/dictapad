@@ -68,3 +68,53 @@ jobs:
           releaseDraft: true
           prerelease: false
           args: --target universal-apple-darwin
+
+      # tauri-action does not produce `latest.json` (the updater manifest)
+      # when the target is `universal-apple-darwin` — it generates the
+      # `.app.tar.gz.sig` next to the bundle but its internal path-matching
+      # skips the upload ("Signature not found for the updater JSON.
+      # Skipping upload..."). This step closes the gap by re-using the
+      # signature file tauri-action already wrote and uploading both the
+      # `.sig` and a hand-built `latest.json` to the draft release.
+      - name: Generate updater manifest and upload signature
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          VERSION="${TAG#v}"
+          SIG_FILE="src-tauri/target/universal-apple-darwin/release/bundle/macos/Dictapad.app.tar.gz.sig"
+
+          if [ ! -f "$SIG_FILE" ]; then
+            echo "::error::Signature file not found at $SIG_FILE — tauri-action behavior may have changed"
+            exit 1
+          fi
+
+          SIGNATURE=$(tr -d '\n' < "$SIG_FILE")
+          DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${TAG}/Dictapad_universal.app.tar.gz"
+
+          SIGNATURE="$SIGNATURE" VERSION="$VERSION" REPO="$REPO" DOWNLOAD_URL="$DOWNLOAD_URL" \
+            python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          data = {
+            "version": os.environ["VERSION"],
+            "notes": f"See https://github.com/{os.environ['REPO']}/blob/main/CHANGELOG.md",
+            "pub_date": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "platforms": {
+              "darwin-x86_64": {
+                "signature": os.environ["SIGNATURE"],
+                "url": os.environ["DOWNLOAD_URL"],
+              },
+              "darwin-aarch64": {
+                "signature": os.environ["SIGNATURE"],
+                "url": os.environ["DOWNLOAD_URL"],
+              },
+            },
+          }
+          with open("latest.json", "w") as f:
+            json.dump(data, f, indent=2)
+          PY
+
+          gh release upload "$TAG" latest.json "$SIG_FILE" --repo "$REPO" --clobber
