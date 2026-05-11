@@ -1,0 +1,46 @@
+name: Bug report
+description: Something is broken or not working as documented.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Please fill in what you can — the more specific, the faster it gets fixed.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, what did you see?
+      placeholder: |
+        1. Open Dictapad
+        2. Press ⌘↵ with an empty buffer
+        3. Expected: nothing happens
+        4. Actual: the toast still shows
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Dictapad version
+      description: From the .dmg filename, or `cat src-tauri/tauri.conf.json | jq '.version'` if building from source.
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version + architecture
+      placeholder: "14.4 (Apple Silicon)"
+    validations:
+      required: true
+  - type: textarea
+    id: dictation-tool
+    attributes:
+      label: Dictation tool (if relevant)
+      description: e.g. Typeless, macOS Voice Control, Whisper Flow. Skip if not applicable.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console output (if any)
+      description: Open Web Inspector via right-click → Inspect Element, or look at the dev-mode terminal output. Paste anything that looks suspicious.
+      render: text

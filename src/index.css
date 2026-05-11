@@ -1,0 +1,159 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: transparent;
+    color: rgb(31, 41, 55);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+      "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Opaque background — kept off-white so the corners against the
+   * (transparent) Tauri shell still get a soft rounded edge. */
+  #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: rgb(250, 250, 252);
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      color: rgb(229, 231, 235);
+    }
+    #root {
+      background: rgb(28, 28, 30);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+  }
+}
+
+/* Milkdown editor styles — keep minimal, Typora-style WYSIWYG */
+@layer components {
+  .milkdown {
+    background: transparent;
+  }
+
+  /* Milkdown's React component injects an intermediate <div> between my
+   * wrapper and the contenteditable .editor. Without an explicit height
+   * that div collapses to content size and clicks below the content
+   * never reach the editor. */
+  .milkdown > * {
+    min-height: 100%;
+  }
+
+  .milkdown .editor {
+    outline: none;
+    min-height: 100%;
+    /* Top padding clears the floating toolbar (32px) + a little breathing room. */
+    padding: 40px 16px 16px 16px;
+    font-size: 15px;
+    line-height: 1.6;
+    caret-color: rgb(59, 130, 246);
+    cursor: text;
+  }
+
+  .milkdown .editor > * + * {
+    margin-top: 0.6em;
+  }
+
+  .milkdown .editor h1 {
+    font-size: 1.6em;
+    font-weight: 700;
+    margin-top: 0.4em;
+  }
+
+  .milkdown .editor h2 {
+    font-size: 1.35em;
+    font-weight: 700;
+    margin-top: 0.4em;
+  }
+
+  .milkdown .editor h3 {
+    font-size: 1.15em;
+    font-weight: 600;
+    margin-top: 0.4em;
+  }
+
+  .milkdown .editor h4,
+  .milkdown .editor h5,
+  .milkdown .editor h6 {
+    font-size: 1em;
+    font-weight: 600;
+  }
+
+  .milkdown .editor p {
+    margin: 0;
+  }
+
+  .milkdown .editor blockquote {
+    border-left: 3px solid rgba(0, 0, 0, 0.18);
+    padding-left: 0.8em;
+    color: rgba(0, 0, 0, 0.65);
+    font-style: italic;
+  }
+
+  .milkdown .editor ul,
+  .milkdown .editor ol {
+    padding-left: 1.6em;
+  }
+
+  .milkdown .editor ul {
+    list-style-type: disc;
+  }
+
+  .milkdown .editor ol {
+    list-style-type: decimal;
+  }
+
+  .milkdown .editor ul ul {
+    list-style-type: circle;
+  }
+
+  .milkdown .editor li {
+    display: list-item;
+  }
+
+  .milkdown .editor li > p {
+    margin: 0;
+  }
+
+  .milkdown .editor strong {
+    font-weight: 600;
+  }
+
+  .milkdown .editor em {
+    font-style: italic;
+  }
+
+  .milkdown .editor code {
+    background: rgba(0, 0, 0, 0.06);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    font-family: "SF Mono", "Menlo", monospace;
+    font-size: 0.92em;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .milkdown .editor blockquote {
+      border-left-color: rgba(255, 255, 255, 0.22);
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .milkdown .editor code {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+}

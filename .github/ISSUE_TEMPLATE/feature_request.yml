@@ -1,0 +1,27 @@
+name: Feature request
+description: Suggest a small improvement that fits the dictation-scratchpad workflow.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Dictapad is intentionally small. Before opening this, please read [CONTRIBUTING.md → What doesn't fit](../../blob/main/CONTRIBUTING.md#what-doesnt-fit). Things like multi-tab support, cloud sync, settings panels, and Markdown features beyond CommonMark are out of scope and will be closed.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the friction in your current workflow — not the solution.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: How would the app behave differently? What stays the same?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+      description: Why is this better than just configuring your dictation tool / using a different app / not doing it?
