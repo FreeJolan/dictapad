@@ -4,6 +4,12 @@ All notable changes to Dictapad. The format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+## [0.1.4] — 2026-05-11
+
+### Verification
+
+- First release where the entire bundle → sign → manifest → upload pipeline runs end-to-end inside the release workflow without manual touch-up. No user-facing changes.
+
 ## [0.1.3] — 2026-05-11
 
 ### Fixed
@@ -56,7 +62,8 @@ Initial release.
   - Undo restores prior state.
   - Output never contains `<br />` for typical content.
 
-[Unreleased]: https://github.com/FreeJolan/dictapad/compare/v0.1.3...HEAD
+[Unreleased]: https://github.com/FreeJolan/dictapad/compare/v0.1.4...HEAD
+[0.1.4]: https://github.com/FreeJolan/dictapad/releases/tag/v0.1.4
 [0.1.3]: https://github.com/FreeJolan/dictapad/releases/tag/v0.1.3
 [0.1.2]: https://github.com/FreeJolan/dictapad/releases/tag/v0.1.2
 [0.1.1]: https://github.com/FreeJolan/dictapad/releases/tag/v0.1.1
