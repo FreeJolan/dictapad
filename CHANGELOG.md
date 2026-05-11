@@ -4,6 +4,20 @@ All notable changes to Dictapad. The format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+## [0.1.1] — 2026-05-11
+
+### Added
+
+- **In-app silent updates** via `tauri-plugin-updater`. On launch the app checks for a newer signed release on GitHub; if one exists, a small banner offers an "升级 / 忽略" choice. Picking "升级" downloads, replaces the binary, and relaunches — no manual download. Picking "忽略" suppresses the prompt for that version (will reappear when the next version ships).
+
+### Changed
+
+- Release pipeline now produces a single **universal macOS binary** (`--target universal-apple-darwin`) from a single `macos-14` runner. Replaces the previous arm64-/x64-split matrix that frequently waited 30+ minutes for an Intel runner. One `.dmg` runs natively on both architectures.
+
+### Notes
+
+- Users on v0.1.0 will need to manually install v0.1.1 once to pick up the updater — v0.1.0 doesn't ship with the updater plugin. From v0.1.1 onward, updates are in-app.
+
 ## [0.1.0] — 2026-05-11
 
 Initial release.
@@ -25,5 +39,6 @@ Initial release.
   - Undo restores prior state.
   - Output never contains `<br />` for typical content.
 
-[Unreleased]: https://github.com/FreeJolan/dictapad/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/FreeJolan/dictapad/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/FreeJolan/dictapad/releases/tag/v0.1.1
 [0.1.0]: https://github.com/FreeJolan/dictapad/releases/tag/v0.1.0

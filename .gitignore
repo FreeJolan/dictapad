@@ -29,3 +29,6 @@ src-tauri/gen/
 # Env
 .env
 .env.local
+
+# Per-user editor / agent settings — local only
+.claude/

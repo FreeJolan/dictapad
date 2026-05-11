@@ -7,20 +7,10 @@ on:
 
 jobs:
   build:
-    name: Build (${{ matrix.target }})
+    name: Build macOS universal binary
     permissions:
       contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: macos-14
-            target: aarch64-apple-darwin
-            arch_label: "Apple Silicon"
-          - platform: macos-13
-            target: x86_64-apple-darwin
-            arch_label: "Intel"
-    runs-on: ${{ matrix.platform }}
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
 
@@ -36,7 +26,7 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.target }}
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
 
       - name: Cargo cache
         uses: Swatinem/rust-cache@v2
@@ -50,24 +40,31 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Required for tauri-plugin-updater to sign the bundle. Without
+          # these, the updater would refuse to install the new version.
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: ${{ github.ref_name }}
           releaseName: "Dictapad ${{ github.ref_name }}"
           releaseBody: |
-            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for the full list of changes in this release.
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for the full list of changes.
 
-            ## Downloads
+            ## Download
 
-            - **${{ matrix.arch_label }}** — `Dictapad_*_${{ matrix.target == 'aarch64-apple-darwin' && 'aarch64' || 'x64' }}.dmg`
+            Single universal `.dmg` runs natively on both Apple Silicon and Intel Macs.
 
             ## Install (macOS)
 
-            1. Download the `.dmg` matching your CPU (Apple Silicon vs Intel).
-            2. Open it and drag `Dictapad.app` into `/Applications`.
-            3. First launch is blocked by Gatekeeper because the bundle is unsigned. Right-click the app → Open → Open. Or run:
+            1. Open the `.dmg` and drag `Dictapad.app` into `/Applications`.
+            2. First launch is blocked by Gatekeeper because the bundle is unsigned by Apple (it's signed by our updater key, but not notarized). Right-click the app → Open → Open. Or run:
                ```bash
                xattr -dr com.apple.quarantine /Applications/Dictapad.app
                ```
+
+            ## Updating
+
+            From this version onward, Dictapad checks for new releases on launch and offers an in-app upgrade button — no need to come back here.
           releaseDraft: true
           prerelease: false
-          args: --target ${{ matrix.target }}
+          args: --target universal-apple-darwin

@@ -7,18 +7,23 @@ import {
   unregister,
   isRegistered,
 } from "@tauri-apps/plugin-global-shortcut";
+import type { Update } from "@tauri-apps/plugin-updater";
 import { Editor, type EditorHandle } from "./components/Editor";
 import { Toolbar } from "./components/Toolbar";
 import { Toast } from "./components/Toast";
+import { UpdateBanner } from "./components/UpdateBanner";
 import {
   clearContent,
   loadContent,
+  loadIgnoredVersion,
   loadPinned,
   restoreWindowGeometry,
   saveContent,
+  saveIgnoredVersion,
   savePinned,
   watchWindowGeometry,
 } from "./lib/persistence";
+import { checkForUpdate, downloadAndInstall } from "./lib/update";
 
 const SAVE_DEBOUNCE_MS = 500;
 const TOAST_DURATION_MS = 1000;
@@ -28,6 +33,8 @@ export default function App() {
   const editorRef = useRef<EditorHandle>(null);
   const [initialValue, setInitialValue] = useState<string | null>(null);
   const [pinned, setPinned] = useState<boolean>(true);
+  const [pendingUpdate, setPendingUpdate] = useState<Update | null>(null);
+  const [installing, setInstalling] = useState(false);
   const [toast, setToast] = useState<{ visible: boolean; message: string }>({
     visible: false,
     message: "",
@@ -81,6 +88,43 @@ export default function App() {
       setToast((t) => ({ ...t, visible: false }));
     }, TOAST_DURATION_MS);
   }, []);
+
+  // Probe for a newer signed release once the app has settled. Skip the
+  // notification if the user has already dismissed this exact version.
+  useEffect(() => {
+    if (initialValue === null) return;
+    let cancelled = false;
+    (async () => {
+      const [update, ignored] = await Promise.all([
+        checkForUpdate(),
+        loadIgnoredVersion(),
+      ]);
+      if (cancelled || !update) return;
+      if (ignored && ignored === update.version) return;
+      setPendingUpdate(update);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [initialValue]);
+
+  const handleInstallUpdate = useCallback(async () => {
+    if (!pendingUpdate) return;
+    setInstalling(true);
+    try {
+      await downloadAndInstall(pendingUpdate);
+    } catch (err) {
+      console.error("update install failed:", err);
+      setInstalling(false);
+      showToast("升级失败，请稍后再试");
+    }
+  }, [pendingUpdate, showToast]);
+
+  const handleIgnoreUpdate = useCallback(async () => {
+    if (!pendingUpdate) return;
+    await saveIgnoredVersion(pendingUpdate.version);
+    setPendingUpdate(null);
+  }, [pendingUpdate]);
 
   const handleChange = useCallback((markdown: string) => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
@@ -233,6 +277,13 @@ export default function App() {
         onClearOnly={handleClearOnly}
       />
       <Toast visible={toast.visible} message={toast.message} />
+      <UpdateBanner
+        visible={pendingUpdate !== null}
+        version={pendingUpdate?.version ?? ""}
+        installing={installing}
+        onInstall={handleInstallUpdate}
+        onIgnore={handleIgnoreUpdate}
+      />
     </div>
   );
 }

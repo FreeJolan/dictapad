@@ -6,6 +6,7 @@ const store = new LazyStore("dictapad.json", { defaults: {}, autoSave: 500 });
 const KEY_CONTENT = "content";
 const KEY_WINDOW = "window";
 const KEY_PINNED = "pinned";
+const KEY_IGNORED_VERSION = "ignoredVersion";
 
 type WindowState = {
   x: number;
@@ -35,6 +36,16 @@ export async function loadPinned(): Promise<boolean | null> {
 
 export async function savePinned(pinned: boolean): Promise<void> {
   await store.set(KEY_PINNED, pinned);
+}
+
+export async function loadIgnoredVersion(): Promise<string | null> {
+  const value = await store.get<string>(KEY_IGNORED_VERSION);
+  return value ?? null;
+}
+
+export async function saveIgnoredVersion(version: string): Promise<void> {
+  await store.set(KEY_IGNORED_VERSION, version);
+  await store.save();
 }
 
 export async function loadWindowState(): Promise<WindowState | null> {

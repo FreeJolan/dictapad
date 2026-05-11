@@ -18,6 +18,7 @@ The core loop is intentionally one button:
 
 ## Features
 
+- **Silent in-app updates** — on launch the app checks for a newer signed release. One click installs and relaunches; "忽略" suppresses the prompt for that version.
 - **Always on top** — sits on top of any window, toggleable from the toolbar (pin button) or `⌘⇧P`
 - **Click-through-friendly UI** — borderless 400×500 window, custom 32px toolbar with drag handle
 - **WYSIWYG Markdown** — CommonMark only (headings, lists, bold/italic, inline code, blockquote); no fenced code blocks, no tables, no surprises
@@ -39,12 +40,9 @@ The core loop is intentionally one button:
 
 ## Install
 
-Grab the latest macOS bundle from the [Releases](https://github.com/FreeJolan/dictapad/releases) page:
+Grab the latest macOS bundle from the [Releases](https://github.com/FreeJolan/dictapad/releases) page — a single universal `.dmg` runs natively on both Apple Silicon and Intel.
 
-- `Dictapad_<version>_aarch64.dmg` — Apple Silicon
-- `Dictapad_<version>_x64.dmg` — Intel
-
-Open the `.dmg`, drag `Dictapad.app` into `/Applications`.
+Open the `.dmg`, drag `Dictapad.app` into `/Applications`. After this first install, Dictapad updates itself in place from inside the app.
 
 > **The bundle is unsigned.** On first launch macOS Gatekeeper will block it. Right-click the app → Open → Open in the dialog (Finder remembers your choice). Or in a terminal:
 > ```bash
