@@ -56,4 +56,8 @@ jobs:
 
       - name: cargo check
         working-directory: src-tauri
-        run: cargo check --locked
+        # --no-default-features skips the `custom-protocol` feature, which
+        # would otherwise trigger Tauri's codegen to validate that the
+        # built frontend exists under `../dist`. The release workflow
+        # (tauri-action) runs a real build with the full feature set.
+        run: cargo check --locked --no-default-features
