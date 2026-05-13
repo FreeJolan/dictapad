@@ -25,6 +25,7 @@ import { listener, listenerCtx } from "@milkdown/plugin-listener";
 import { history, redo, undo } from "@milkdown/prose/history";
 import { keymap } from "@milkdown/prose/keymap";
 import { $prose } from "@milkdown/utils";
+import { normalizePastePlugin } from "./normalizePastePlugin";
 
 /**
  * The default `commonmark` preset bundles `remarkPreserveEmptyLinePlugin`,
@@ -89,5 +90,6 @@ export function buildEditor(
     .use(commonmarkWithoutEmptyLinePreservation)
     .use(listener)
     .use(historyPlugin)
-    .use(historyKeymap);
+    .use(historyKeymap)
+    .use(normalizePastePlugin);
 }

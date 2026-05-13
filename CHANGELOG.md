@@ -4,6 +4,12 @@ All notable changes to Dictapad. The format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+## [0.1.5] — 2026-05-13
+
+### Fixed
+
+- Pasted text now lands in the editor as the markdown structure it represents, eliminating the `\.` and `&#x20;` defensive escapes that leaked into copied output. Voice-dictation tools deliver text as a single bulk paste; the previous pipeline kept it as opaque paragraph nodes, so a dictated `1. foo` stayed a paragraph that *looked* like a list — and on serialize, the writer had to escape it (`1\. foo`) to prevent re-parsing from changing the structure. Same story for paragraphs that happened to start with whitespace ending up as `&#x20;`. Pasted content is now routed through Milkdown's markdown parser at insert time (the strategy Typora uses on input), so the doc model matches the visual rendering and copied output is free of the backslash and entity artifacts that previously confused terminals and downstream LLM agents.
+
 ## [0.1.4] — 2026-05-11
 
 ### Verification
@@ -62,7 +68,8 @@ Initial release.
   - Undo restores prior state.
   - Output never contains `<br />` for typical content.
 
-[Unreleased]: https://github.com/FreeJolan/dictapad/compare/v0.1.4...HEAD
+[Unreleased]: https://github.com/FreeJolan/dictapad/compare/v0.1.5...HEAD
+[0.1.5]: https://github.com/FreeJolan/dictapad/releases/tag/v0.1.5
 [0.1.4]: https://github.com/FreeJolan/dictapad/releases/tag/v0.1.4
 [0.1.3]: https://github.com/FreeJolan/dictapad/releases/tag/v0.1.3
 [0.1.2]: https://github.com/FreeJolan/dictapad/releases/tag/v0.1.2
