@@ -42,12 +42,7 @@ The core loop is intentionally one button:
 
 Grab the latest macOS bundle from the [Releases](https://github.com/FreeJolan/dictapad/releases) page — a single universal `.dmg` runs natively on both Apple Silicon and Intel.
 
-Open the `.dmg`, drag `Dictapad.app` into `/Applications`. After this first install, Dictapad updates itself in place from inside the app.
-
-> **The bundle is unsigned.** On first launch macOS Gatekeeper will block it. Right-click the app → Open → Open in the dialog (Finder remembers your choice). Or in a terminal:
-> ```bash
-> xattr -dr com.apple.quarantine /Applications/Dictapad.app
-> ```
+Open the `.dmg`, drag `Dictapad.app` into `/Applications`. The bundle is signed with an Apple Developer ID and notarized by Apple, so Gatekeeper lets it launch on the first try. After this first install, Dictapad updates itself in place from inside the app.
 
 ## Develop
 

@@ -4,6 +4,12 @@ All notable changes to Dictapad. The format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+## [0.1.6] — 2026-05-14
+
+### Changed
+
+- Release bundle is now signed with an Apple Developer ID and notarized by Apple. macOS Gatekeeper accepts it on the first launch — the `xattr -dr com.apple.quarantine` workaround and the "right-click → Open" dance from earlier versions are no longer needed. Existing users on v0.1.5 will pick this up via the in-app updater on next launch.
+
 ## [0.1.5] — 2026-05-13
 
 ### Fixed
@@ -68,7 +74,8 @@ Initial release.
   - Undo restores prior state.
   - Output never contains `<br />` for typical content.
 
-[Unreleased]: https://github.com/FreeJolan/dictapad/compare/v0.1.5...HEAD
+[Unreleased]: https://github.com/FreeJolan/dictapad/compare/v0.1.6...HEAD
+[0.1.6]: https://github.com/FreeJolan/dictapad/releases/tag/v0.1.6
 [0.1.5]: https://github.com/FreeJolan/dictapad/releases/tag/v0.1.5
 [0.1.4]: https://github.com/FreeJolan/dictapad/releases/tag/v0.1.4
 [0.1.3]: https://github.com/FreeJolan/dictapad/releases/tag/v0.1.3

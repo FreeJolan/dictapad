@@ -44,6 +44,18 @@ jobs:
           # these, the updater would refuse to install the new version.
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          # Apple Developer ID code signing + notarization. tauri-action
+          # imports the cert into a temp keychain, signs the bundle with
+          # hardened runtime, then submits it to Apple notary. Without
+          # these the bundle still builds but ships unsigned (Gatekeeper
+          # blocks first launch, users need `xattr -dr` or right-click
+          # Open).
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         with:
           tagName: ${{ github.ref_name }}
           releaseName: "Dictapad ${{ github.ref_name }}"
@@ -56,11 +68,7 @@ jobs:
 
             ## Install (macOS)
 
-            1. Open the `.dmg` and drag `Dictapad.app` into `/Applications`.
-            2. First launch is blocked by Gatekeeper because the bundle is unsigned by Apple (it's signed by our updater key, but not notarized). Right-click the app → Open → Open. Or run:
-               ```bash
-               xattr -dr com.apple.quarantine /Applications/Dictapad.app
-               ```
+            Open the `.dmg` and drag `Dictapad.app` into `/Applications`. The bundle is signed with an Apple Developer ID and notarized — Gatekeeper will let it launch on the first try.
 
             ## Updating
 
